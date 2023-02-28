@@ -1,2 +1,2 @@
 # yummy-trucks
-A engineering challenge
+A engineering challenge from https://github.com/peck/engineering-assessment
