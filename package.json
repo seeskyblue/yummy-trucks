@@ -1,0 +1,46 @@
+{
+  "name": "yummy-trucks",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "data:watch": "nodemon data/generate.js -w data -w trucks.csv",
+    "data:generate": "NODE_ENV=production node data/generate.js"
+  },
+  "dependencies": {
+    "next": "13.2.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.14.2",
+    "@types/react": "18.0.28",
+    "@types/react-dom": "18.0.11",
+    "@typescript-eslint/eslint-plugin": "5.47.0",
+    "@typescript-eslint/parser": "5.47.0",
+    "eslint": "8.35.0",
+    "eslint-config-next": "13.2.1",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-import-resolver-typescript": "3.5.2",
+    "eslint-plugin-compat": "4.0.2",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-jsx-a11y": "6.6.1",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-react": "7.31.11",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "iconv-lite": "0.6.3",
+    "nodemon": "2.0.20",
+    "prettier": "2.8.1"
+  },
+  "optionalDependencies": {
+    "camelcase": "6.3.0",
+    "chalk": "4.1.2",
+    "console-stamp": "3.1.1",
+    "rimraf": "4.1.2",
+    "typescript": "4.9.5",
+    "xlsx": "file:vendor/xlsx-0.19.1.tgz"
+  }
+}
