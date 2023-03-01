@@ -1,0 +1,12 @@
+.map-box {
+  display: flex;
+  justify-content: stretch;
+  align-items: stretch;
+
+  height: 500px;
+  width: 100%;
+}
+
+.map-container {
+  flex: auto;
+}

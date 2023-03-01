@@ -11,6 +11,9 @@ module.exports = {
   ],
   ignorePatterns: ['node_modules/**'],
   parser: '@typescript-eslint/parser',
+  parserOptions: {
+    project: 'tsconfig.json',
+  },
   plugins: ['@typescript-eslint', 'import', 'compat', 'jsx-a11y', 'react', 'react-hooks'],
   rules: {
     // next rules
@@ -107,10 +110,8 @@ module.exports = {
         '@typescript-eslint/no-non-null-assertion': 'off',
         // reference: https://github.com/typescript-eslint/typescript-eslint/issues/2245
         '@typescript-eslint/unbound-method': 'off',
-        '@typescript-eslint/no-floating-promises': [
-          'error',
-          { ignoreVoid: true, ignoreIIFE: false },
-        ],
+        '@typescript-eslint/no-floating-promises': 'off',
+        '@typescript-eslint/no-unsafe-assignment': 'off',
 
         // '@typescript-eslint rules
         'react/prop-types': 'off',

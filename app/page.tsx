@@ -1,91 +1,104 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+'use client';
 
-const inter = Inter({ subsets: ['latin'] })
+import useRequest from '@ahooksjs/use-request';
+import { Box, Flex, Wrap, WrapItem } from '@chakra-ui/react';
+import axios from 'axios';
+import dynamic from 'next/dynamic';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { FixedSizeList } from 'react-window';
+
+import 'leaflet/dist/leaflet.css';
+import Header from './header';
+
+import TruckCard from '@/components/TruckCard';
+
+const TruckMap = dynamic(() => import('components/TruckMap'), { ssr: false });
+const headerHeight = 72;
 
 export default function Home() {
+  const [datasource = [], handleSearch] = useSearch();
+  const widnowHeight = useWindowHeight();
+
+  const [currentTruck, setCurrentTruck] = useState<Schema.Truck>();
+  useEffect(() => {
+    if (datasource.length > 1) setCurrentTruck((prev) => prev ?? datasource[0]);
+  }, [datasource]);
+  const handleListItemClick = (truck: Schema.Truck) => () => {
+    setCurrentTruck(truck);
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <Box as="main" height="100vh" width="100vw" flexFlow="column" overflow="hidden">
+      <Box>
+        <Header height={headerHeight} onSearch={handleSearch} />
+      </Box>
+      <Flex
+        height={`calc(100vh - ${headerHeight}px)`}
+        flex="auto"
+        flexFlow="row"
+        alignItems="stretch"
+      >
+        <Wrap width="320px" height="100%" overflow="hidden">
+          <FixedSizeList
+            itemCount={datasource.length}
+            itemSize={160}
+            height={widnowHeight - headerHeight - 8} // reduce chakra wrap item vertical margin
+            width={320}
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+            {({ index, style }) => {
+              const data = datasource[index];
+              return (
+                <WrapItem
+                  cursor="pointer"
+                  key={data.locationid}
+                  style={style}
+                  _notLast={{ borderBottom: '1px solid', borderColor: 'gray.200' }}
+                  onClick={handleListItemClick(data)}
+                >
+                  <TruckCard data={data} />
+                </WrapItem>
+              );
+            }}
+          </FixedSizeList>
+        </Wrap>
+        <Box flex="auto">
+          <TruckMap
+            center={currentTruck && [currentTruck.latitude, currentTruck.longitude]}
+            markers={datasource}
+          />
+        </Box>
+      </Flex>
+    </Box>
+  );
+}
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
+async function getData(search?: string, postion?: [number, number]) {
+  const res = await axios.get<Schema.Truck[]>('/api/trucks', { params: { search, postion } });
+  return res.data;
+}
 
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
+function useSearch() {
+  const [search, setSearch] = useState<string>();
+  const handleSearch = useCallback((value: string) => {
+    setSearch(value);
+  }, []);
 
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
+  const { data = [] } = useRequest(getData);
+  const searchedData = useMemo(
+    () =>
+      search ? data?.filter((d) => d.applicant.toLowerCase().includes(search.toLowerCase())) : data,
+    [data, search],
+  );
 
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+  return [searchedData, handleSearch] as const;
+}
+
+function useWindowHeight(initialHeight = 500) {
+  const [height, setHeight] = useState(initialHeight);
+
+  useEffect(() => {
+    setHeight(global.document.body.getBoundingClientRect().height);
+  }, []);
+
+  return height;
 }
