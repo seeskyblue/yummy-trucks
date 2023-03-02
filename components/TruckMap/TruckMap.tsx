@@ -18,7 +18,6 @@ interface Props {
   markers: Schema.Truck[];
 }
 
-// eslint-disable-next-line no-magic-numbers
 const CENTER_OF_FRANCISCO = [37.7749, -122.4194] as LatLngExpression;
 const truckIcon = icon({ iconUrl: truckImage.src, shadowUrl: shadowImage.src });
 const myPositionIcon = icon({ iconUrl: positionImage.src, shadowUrl: shadowImage.src });

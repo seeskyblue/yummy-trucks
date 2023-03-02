@@ -7,7 +7,6 @@ import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { FixedSizeList } from 'react-window';
 
-import 'leaflet/dist/leaflet.css';
 import Header from './header';
 
 import TruckCard from '@/components/TruckCard';
